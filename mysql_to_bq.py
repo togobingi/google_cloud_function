@@ -13,15 +13,15 @@ import pyarrow
 def handler(request):
     ############### EXTRAT DATA ##################
     #ssh variables
-    host = 'SRV-A-DE.C-589.MAXCLUSTER.NET'
-    localhost = '127.0.0.1'
-    ssh_username = 'web-user'
-    ssh_password = 'sssh_password'
+    host = 'SSH_HOST_NAME'
+    localhost = 'LOCALHOST'
+    ssh_username = 'SSH-USERNAME'
+    ssh_password = 'SSH_PASSWORD'
 
     #database variables
     user = 'user'
     password = 'password'
-    database = 'coffeecircleshopware'
+    database = 'DB_NAME'
 
     #The Query Function
     def query(q):
@@ -41,20 +41,18 @@ def handler(request):
         SSHTunnelForwarder.close
 
 
-    df = query('SELECT * FROM s_order ORDER BY id')
-    #Convert to json file
-    #json_file = df.to_json(orient='records',lines="false") #convert sql results to json file
+    df = query('SELECT * FROM mysql_table_name ORDER BY id')
+
     
     # from google.cloud import bigquery
     client = bigquery.Client()
-    dataset_id = 'mydataset'
-    #table_id = "coffeecircle-dwh:mydataset.test_etl"
+    dataset_id = 'dataset_ID'
 
     dataset_ref = client.dataset(dataset_id)
     job_config = bigquery.LoadJobConfig()
     job_config.autodetect = True
     job_config.write_disposition = "WRITE_TRUNCATE"
     job_config.source_format = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
-    load_job = client.load_table_from_dataframe(df, dataset_ref.table("test_etl"), job_config=job_config, location="US")    # API request
+    load_job = client.load_table_from_dataframe(df, dataset_ref.table("bigQuery_table_name"), job_config=job_config, location="dataset_location")    # API request
     print("Starting job {}".format(load_job))
     return ("Done!", 200)
